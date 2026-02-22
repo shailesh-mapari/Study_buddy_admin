@@ -3,6 +3,8 @@ import { dashboardStyles } from "../assets/dummyStyles";
 import {
   BadgeIndianRupee,
   BookMarked,
+  BookOpenText,
+  Search,
   ShoppingCart,
   Users,
 } from "lucide-react";
@@ -80,6 +82,27 @@ const DashboardPage = () => {
         .then((j) =>
           j.success ? j.courses : Promise.reject(j.message || "Course error"),
         );
+
+    // const fetchStats = () =>
+    //   fetch(`${API_BASE}/api/booking/stats`)
+    //     .then(async (r) => {
+    //       if (!r.ok) throw new Error("Failed to fetch stats");
+    //       return r.json();
+    //     })
+    //     .then((j) =>
+    //       j.success ? j.stats : Promise.reject(j.message || "Stats error"),
+    //     );
+
+    // const fetchCourses = () =>
+    //   fetch(`${API_BASE}/api/course`)
+    //     .then(async (r) => {
+    //       if (!r.ok) throw new Error("Failed to fetch courses");
+    //       return r.json();
+    //     })
+    //     .then((j) =>
+    //       j.success ? j.courses : Promise.reject(j.message || "Course error"),
+    //     );
+    //
 
     Promise.all([fetchStats(), fetchCourses()])
       .then(([stats, courses]) => {
@@ -218,10 +241,122 @@ const DashboardPage = () => {
             );
           })}
         </div>
+        {/* Courses Section */}
+        <div className={dashboardStyles.coursesContainer}>
+          <div className={dashboardStyles.coursesHeader}>
+            <div className={dashboardStyles.coursesTitleContainer}>
+              <BookOpenText className={dashboardStyles.coursesIcon} />
+              <h2 className={dashboardStyles.coursesTitle}>
+                {" "}
+                Course Performance
+              </h2>
+            </div>
+
+            <div className={dashboardStyles.searchContainer}>
+              <Search className={dashboardStyles.searchIcon} />
+              <input
+                type="text"
+                placeholder="Search Courses..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className={dashboardStyles.searchInput}
+              />
+            </div>
+          </div>
+          {/* Courses Table */}
+          <div className={dashboardStyles.tableContainer}>
+            <table className={dashboardStyles.table}>
+              <thead className={dashboardStyles.tableHead}>
+                <tr>
+                  <th className={dashboardStyles.tableHeader}>Course</th>
+                  <th className={dashboardStyles.tableHeader}>Students</th>
+                  <th className={dashboardStyles.tableHeader}>Price</th>
+                  <th className={dashboardStyles.tableHeader}>Purchases</th>
+                  <th className={dashboardStyles.tableHeader}>Earnings</th>
+                </tr>
+              </thead>
+              {/*Course Performance */}
+              <tbody className={dashboardStyles.tableBody}>
+                {filteredCourses.map((course, index) => (
+                  <tr
+                    key={course.id || `${index}`}
+                    className={dashboardStyles.tableRow}
+                    style={{
+                      animationDelay: `${index * 50 + 400}ms`,
+                    }}
+                  >
+                    <td className="px-4 sm:px-6 py-3 sm:py-4">
+                      <div className="flex items-center">
+                        <img
+                          src={course.image}
+                          alt={course.name}
+                          className={dashboardStyles.courseImage}
+                        />
+                        <div>
+                          <p className={dashboardStyles.courseName}>
+                            {course.name}
+                          </p>
+                          <p className={dashboardStyles.courseInstructor}>
+                            {course.instructor}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    {/*price column */}
+                    <td className={dashboardStyles.studentsCell}>
+                      <div className=" flex items-center text-gray-700">
+                        <span className={dashboardStyles.studentsText}>
+                          {course.students}
+                        </span>
+                      </div>
+                    </td>
+                    <td className={dashboardStyles.priceCell}>
+                      {course.price}
+                    </td>
+                    {/* Purchases Column */}
+                    <td className=" px-4 sm:px-6 py-3 sm:py-4">
+                      <div className={dashboardStyles.purchasesContainer}>
+                        <ShoppingCart
+                          className={dashboardStyles.purchasesIcon}
+                        />
+                        <span className={dashboardStyles.purchasesText}>
+                          {course.purchases}
+                        </span>
+                      </div>
+                    </td>
+                    <td className={dashboardStyles.earningsCell}>
+                      {course.earnings}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            {filteredCourses.length === 0 && !loading && (
+              <div className={dashboardStyles.emptyState}>
+                <Search className={dashboardStyles.emptyIcon} />
+                <p className={dashboardStyles.emptyText}>
+                  No courses found matching your search.
+                </p>
+                <button
+                  onClick={() => setSearchTerm("")}
+                  className={dashboardStyles.clearButton}
+                >
+                  {" "}
+                  Clear Search
+                </button>
+              </div>
+            )}
+            {loading && (
+              <div className={dashboardStyles.loadingOverlay}>
+                <div className={dashboardStyles.loadingSpinner} />
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
 export default DashboardPage;
-//5
+//5.14
